@@ -9,11 +9,11 @@ const app = express();
 const IMGTYPES = 'jpg|jpeg|png|JPG|JPEG|PNG';
 const sources = [
     'https://thanhnien.vn/rss/viet-nam.rss',
-    'http://vietnamnet.vn/rss/thoi-su.rss',
+    //'http://vietnamnet.vn/rss/thoi-su.rss',
     'https://vnexpress.net/rss/thoi-su.rss',
-    //'https://thanhnien.vn/rss/the-gioi.rss',
+    'https://thanhnien.vn/rss/the-gioi.rss',
     //'https://vietnamnet.vn/rss/the-gioi.rss',
-    //'https://vnexpress.net/rss/the-gioi.rss'
+    'https://vnexpress.net/rss/the-gioi.rss'
 ];
 const categories = [{
         code: 'news',
@@ -131,15 +131,15 @@ app.get('/news', (req, res) => {
     });
 });
 
-app.get('/worlds', (req, res) => {
+app.get('/world', (req, res) => {
     Post.find({
         category: categories[1].code
-    }, (err, news) => {
+    }, (err, world) => {
         if (err) {
             console.error(err);
         } else {
             res.send({
-                news: news
+                world: world
             });
         }
     });
