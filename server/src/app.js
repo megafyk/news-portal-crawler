@@ -63,7 +63,7 @@ app.post('/update', async (req, res) => {
     await Promise.all(promises).then((data) => {
         feeds = data;
     });
-    
+
     for (let i = 0; i < feeds.length; i++) {
         let category = categories[0].code;
         for (let j = 0; j < categories.length; j++) {
@@ -118,7 +118,31 @@ app.post('/update', async (req, res) => {
 });
 
 app.get('/news', (req, res) => {
+    Post.find({
+        category: categories[0].code
+    }, (err, news) => {
+        if (err) {
+            console.error(err);
+        } else {
+            res.send({
+                news: news
+            });
+        }
+    });
+});
 
+app.get('/worlds', (req, res) => {
+    Post.find({
+        category: categories[1].code
+    }, (err, news) => {
+        if (err) {
+            console.error(err);
+        } else {
+            res.send({
+                news: news
+            });
+        }
+    });
 });
 
 app.listen(process.env.PORT || 8081);
