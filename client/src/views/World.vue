@@ -2,7 +2,7 @@
   <div>
     <input type="text" v-model="search" placeholder="Tìm kiếm bài báo">
     <ul class="blog-post columns-2">
-      <li v-for="data in news" :key="data._id">
+      <li v-for="data in world" :key="data._id">
         <img :src="data.imageUrl">
         <h3>{{data.title}}</h3>
         <p>{{data.description}}</p>
@@ -15,30 +15,23 @@
 </template>
 
 <script>
-import NewsService from "../services/NewsService.js";
+import WorldService from "../services/WorldService.js";
 
 export default {
-  name: "news",
+  name: "world",
   data() {
     return {
-      news: [],
+      world: [],
       search: ""
     };
   },
   mounted() {
-    this.getNews();
+    this.getWorld();
   },
   methods: {
-    async getNews() {
-      const response = await NewsService.fetchNews();
-      this.news = response.data.news;
-    }
-  },
-  computed: {
-    filteredNews: function() {
-      return this.news.filter(data => {
-        return data.title.match(this.search);
-      });
+    async getWorld() {
+      const response = await WorldService.fetchWorld();
+      this.world = response.data.world;
     }
   }
 };

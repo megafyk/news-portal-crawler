@@ -1,21 +1,35 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/news">News</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
+  <div id="app" class="container">
+    <div class="title animated fadeInDown" id="title">Trang tin tổng hợp</div>
+    <nav>
+      <router-link to="/">
+        <a>Home</a>
+      </router-link>
+      <router-link to="/news">
+        <a>News</a>
+      </router-link>
+      <router-link to="/world">
+        <a>World</a>
+      </router-link>
+      <router-link to="/about">
+        <a>About</a>
+      </router-link>
+    </nav>
     <router-view/>
   </div>
 </template>
 
 <style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+nav {
+  font-family: Open Sans, sans-serif;
   text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  word-spacing: 30px;
+}
+
+nav a {
+  text-decoration: none;
+  color: #cad3e0;
+  padding: 10px;
 }
 </style>
+
