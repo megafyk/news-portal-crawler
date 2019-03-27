@@ -10,7 +10,7 @@ const IMGTYPES = 'jpg|jpeg|png|JPG|JPEG|PNG';
 const sources = [
     'https://thanhnien.vn/rss/viet-nam.rss',
     'http://vietnamnet.vn/rss/thoi-su.rss',
-    //'https://vnexpress.net/rss/thoi-su.rss',
+    'https://vnexpress.net/rss/thoi-su.rss',
     //'https://thanhnien.vn/rss/the-gioi.rss',
     //'https://vietnamnet.vn/rss/the-gioi.rss',
     //'https://vnexpress.net/rss/the-gioi.rss'
@@ -68,7 +68,7 @@ app.post('/update', async (req, res) => {
         let category = categories[0].code;
         for (let j = 0; j < categories.length; j++) {
             if (feeds[i].title.includes(categories[j].title)) {
-                category = categories[i].code;
+                category = categories[j].code;
             }
         }
 
@@ -91,33 +91,7 @@ app.post('/update', async (req, res) => {
             }
         }
     }
-    // data.forEach(feed => {
-    //     let category = categories[0].code;
-    //     for (let i = 0; i < categories.length; i++) {
-    //         if (feed.title.includes(categories[i].title)) {
-    //             category = categories[i].code;
-    //         }
-    //     }
 
-    //     feed.items.forEach(item => {
-    //         let posts = await Post.find({
-    //             source: item.source
-    //         });
-    //         if (posts.length === 0) {
-    //             let imageRex = new RegExp(`<img.*?src=["\'](([^\'"]*)\.(${IMGTYPES}).*?)["\']`);
-    //             let imageUrl = imageRex.exec(item.content) ?
-    //                 imageRex.exec(item.content)[1] : '';
-    //             items.push({
-    //                 source: item.link,
-    //                 title: item.title,
-    //                 imageUrl: imageUrl,
-    //                 description: item.contentSnippet,
-    //                 pubDate: item.pubDate,
-    //                 category: category
-    //             });
-    //         }
-    //     });
-    // });
     if (items.length !== 0) {
         Post.collection.insertMany(items, (err, docs) => {
             if (err) {
