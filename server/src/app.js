@@ -8,10 +8,12 @@ const app = express();
 // image support
 const IMGTYPES = 'jpg|jpeg|png|JPG|JPEG|PNG';
 const sources = [
-    // 'https://thanhnien.vn/rss/viet-nam.rss',
-    // 'http://vietnamnet.vn/rss/thoi-su.rss',
-    'https://vnexpress.net/rss/thoi-su.rss',
-    'https://vnexpress.net/rss/the-gioi.rss'
+    'https://thanhnien.vn/rss/viet-nam.rss',
+    'http://vietnamnet.vn/rss/thoi-su.rss',
+    //'https://vnexpress.net/rss/thoi-su.rss',
+    //'https://thanhnien.vn/rss/the-gioi.rss',
+    //'https://vietnamnet.vn/rss/the-gioi.rss',
+    //'https://vnexpress.net/rss/the-gioi.rss'
 ];
 const categories = [{
         code: 'news',
@@ -44,8 +46,9 @@ app.get('/', (req, res) => {
     res.send("Hello World!");
 });
 
-app.post('/init', (req, res) => {
+app.post('/update', async (req, res) => {
     let parser = new Parser();
+    let feeds = [];
     let items = [];
     let promises = [];
 
@@ -56,36 +59,71 @@ app.post('/init', (req, res) => {
             });
         }));
     });
-    Promise.all(promises).then((data) => {
-        data.forEach(feed => {
-            let category = categories[0].code;
-            for (let i = 0; i < categories.length; i++) {
-                if (feed.title.includes(categories[i].title)) {
-                    category = categories[i].code;
-                }
-            }
 
-            feed.items.forEach(item => {
+    await Promise.all(promises).then((data) => {
+        feeds = data;
+    });
+    
+    for (let i = 0; i < feeds.length; i++) {
+        let category = categories[0].code;
+        for (let j = 0; j < categories.length; j++) {
+            if (feeds[i].title.includes(categories[j].title)) {
+                category = categories[i].code;
+            }
+        }
+
+        for (let j = 0; j < feeds[i].items.length; j++) {
+            let posts = await Post.find({
+                source: feeds[i].items[j].link
+            });
+            if (posts.length === 0) {
                 let imageRex = new RegExp(`<img.*?src=["\'](([^\'"]*)\.(${IMGTYPES}).*?)["\']`);
-                let imageUrl = imageRex.exec(item.content) ?
-                    imageRex.exec(item.content)[1] : '';
+                let imageUrl = imageRex.exec(feeds[i].items[j].content) ?
+                    imageRex.exec(feeds[i].items[j].content)[1] : '';
                 items.push({
-                    source: item.link,
-                    title: item.title,
+                    source: feeds[i].items[j].link,
+                    title: feeds[i].items[j].title,
                     imageUrl: imageUrl,
-                    description: item.contentSnippet,
-                    pubDate: item.pubDate,
+                    description: feeds[i].items[j].contentSnippet,
+                    pubDate: feeds[i].items[j].pubDate,
                     category: category
                 });
-            });
-        });
+            }
+        }
+    }
+    // data.forEach(feed => {
+    //     let category = categories[0].code;
+    //     for (let i = 0; i < categories.length; i++) {
+    //         if (feed.title.includes(categories[i].title)) {
+    //             category = categories[i].code;
+    //         }
+    //     }
 
+    //     feed.items.forEach(item => {
+    //         let posts = await Post.find({
+    //             source: item.source
+    //         });
+    //         if (posts.length === 0) {
+    //             let imageRex = new RegExp(`<img.*?src=["\'](([^\'"]*)\.(${IMGTYPES}).*?)["\']`);
+    //             let imageUrl = imageRex.exec(item.content) ?
+    //                 imageRex.exec(item.content)[1] : '';
+    //             items.push({
+    //                 source: item.link,
+    //                 title: item.title,
+    //                 imageUrl: imageUrl,
+    //                 description: item.contentSnippet,
+    //                 pubDate: item.pubDate,
+    //                 category: category
+    //             });
+    //         }
+    //     });
+    // });
+    if (items.length !== 0) {
         Post.collection.insertMany(items, (err, docs) => {
             if (err) {
                 console.error(err);
                 res.send({
                     success: false,
-                    items: [],
                     message: 'Failed.'
                 });
             } else {
@@ -97,20 +135,16 @@ app.post('/init', (req, res) => {
                 });
             }
         });
-    })
-});
-
-
-
-
-app.post('/update', (req, res) => {
-
+    } else {
+        res.send({
+            success: true,
+            message: 'Successfully.'
+        })
+    }
 });
 
 app.get('/news', (req, res) => {
-    res.send("This is greetings from server");
+
 });
-
-
 
 app.listen(process.env.PORT || 8081);
