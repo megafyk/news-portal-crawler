@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "lodash": "^4.17.11",
     "rss-parser": "^3.7.0",
     "vue": "^2.6.6",
     "vue-router": "^3.0.1",

@@ -13,6 +13,7 @@
         <img :src="data.imageUrl" width="300px">
         <h3>{{data.title}}</h3>
         <p>{{data.description}}</p>
+        <p>{{data.dateDiff}}</p>
         <div class="button" v-on:click="openUrl(data.source)">Đọc thêm</div>
       </li>
     </ul>
@@ -21,6 +22,9 @@
 
 <script>
 import NewsService from "../services/NewsService.js";
+import _ from "lodash";
+const rtf = new Intl.RelativeTimeFormat("vi", { numeric: "auto" });
+const d = new Date();
 
 export default {
   name: "news",
@@ -37,6 +41,13 @@ export default {
     async getNews() {
       const response = await NewsService.fetchNews();
       this.news = response.data.news;
+      this.news.forEach(post => {
+        const pdate = new Date(post.pubDate);
+        const dateDiff = pdate.getDate() - d.getDate();
+        post.dateDiff = isNaN(dateDiff)
+          ? post.pubDate
+          : rtf.format(dateDiff, "day");
+      });
     },
     openUrl(url) {
       window.open(url);
